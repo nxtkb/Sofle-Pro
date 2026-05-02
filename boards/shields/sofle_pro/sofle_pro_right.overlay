@@ -1,4 +1,4 @@
-#include "sweep.dtsi"
+#include "sofle_pro.dtsi"
 
 &default_transform {
 	col-offset = <5>;

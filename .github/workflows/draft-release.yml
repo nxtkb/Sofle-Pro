@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       release_title:
-        description: Optional release title. Defaults to "Sweep-Pro for e-ink <tag>"
+        description: Optional release title. Defaults to "Sofle-Pro for e-ink <tag>"
         required: false
         type: string
       target:
@@ -43,7 +43,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          title="${RELEASE_TITLE:-Sweep-Pro for e-ink ${TAG_NAME}}"
+          title="${RELEASE_TITLE:-Sofle-Pro for e-ink ${TAG_NAME}}"
           body_file="$(mktemp)"
           sed "s/vX\.Y\.Z/${TAG_NAME}/g" .github/release_template.md > "${body_file}"
 

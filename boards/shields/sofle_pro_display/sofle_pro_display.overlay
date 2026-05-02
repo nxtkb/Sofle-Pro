@@ -1,0 +1,7 @@
+/*
+ * This shield only provides the custom ZMK status screen UI.
+ *
+ * Keep the display hardware definition in the keyboard shield overlay, e.g.
+ * Sofle-Pro's sofle_pro_left.overlay. Defining the SSD1680/MIPI DBI node here as
+ * well would conflict when building with SHIELD="sofle_pro_left sofle_pro_display".
+ */

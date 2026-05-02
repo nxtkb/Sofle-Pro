@@ -1,0 +1,13 @@
+# No whitespace after the comma or in your part name!
+config SHIELD_SOFLE_PRO_LEFT
+    def_bool $(shields_list_contains,sofle_pro_left)
+
+config SHIELD_SOFLE_PRO_LEFT_DISPLAY_HW
+    def_bool $(shields_list_contains,sofle_pro_left_display_hw)
+
+# No whitespace after the comma or in your part name!
+config SHIELD_SOFLE_PRO_RIGHT
+    def_bool $(shields_list_contains,sofle_pro_right)
+
+config SHIELD_SOFLE_PRO_RIGHT_TPS65
+    def_bool $(shields_list_contains,sofle_pro_right_tps65)

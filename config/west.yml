@@ -13,9 +13,6 @@ manifest:
     remote: zmkfirmware
     revision: cb615aee9a7c427e251f2ab62080c1a44a165da9
     import: app/west.yml
-  - name: zmk-vfx-sweep-pro-display
-    remote: nxtkb
-    revision: 7fa09a2ea91f94f7378acaf81b461197b01f4854
   - name: zmk-behavior-report
     remote: nxtkb
     revision: main

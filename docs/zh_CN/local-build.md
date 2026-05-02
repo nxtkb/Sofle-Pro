@@ -1,17 +1,17 @@
-# Sweep-Pro 本地编译
+# Sofle-Pro 本地编译
 
-本文记录在本机编译 Sweep-Pro ZMK 固件的流程。先按你的实际 checkout 位置设置 `NXTKB_ROOT`：
+本文记录在本机编译 Sofle-Pro ZMK 固件的流程。先按你的实际 checkout 位置设置 `NXTKB_ROOT`：
 
 ```shell
 export NXTKB_ROOT="/path/to/nxtkb"
 cd "$NXTKB_ROOT/zmkfirmware/zmk"
 ```
 
-后续命令默认从 ZMK workspace 根目录执行。`$NXTKB_ROOT/Sweep-Pro` 是键盘配置和 shield 仓库，不是 west workspace 根目录。不要在 `Sweep-Pro` 目录里直接执行 `west build`。
+后续命令默认从 ZMK workspace 根目录执行。`$NXTKB_ROOT/Sofle-Pro` 是键盘配置和 shield 仓库，不是 west workspace 根目录。不要在 `Sofle-Pro` 目录里直接执行 `west build`。
 
-当前本地编译使用官方 `zmkfirmware/zmk` checkout。Sweep-Pro 的屏幕状态栏已经从旧的 `lynnlee0522/zmk` fork 拆成独立模块 `zmk-vfx-sweep-pro-display`，所以编译带屏幕的左手固件时需要同时加入该 module，并把 `sweep_display` 放进 `SHIELD` 列表。
+当前本地编译使用官方 `zmkfirmware/zmk` checkout。Sofle-Pro 的屏幕状态栏已经作为可选 `sofle_pro_display` shield 放进本仓库，所以编译带屏幕的左手固件时只需要把 `sofle_pro_display` 放进 `SHIELD` 列表。
 
-Sweep-Pro 的 keymap 是所有硬件版本共用的一份 `config/sweep.keymap`。屏幕和触控板作为可选 shield 组合进构建，因此同一个仓库可以产出 4 个半边固件，用户只需要按自己的硬件版本选择对应 UF2。
+Sofle-Pro 的 keymap 是所有硬件版本共用的一份 `config/sofle_pro.keymap`。屏幕和触控板作为可选 shield 组合进构建，因此同一个仓库可以产出 4 个半边固件，用户只需要按自己的硬件版本选择对应 UF2。
 
 ## 依赖
 
@@ -70,50 +70,50 @@ uv pip install -r zephyr/scripts/requirements-base.txt protobuf
 
 `west zephyr-export` 会写入用户级 CMake package registry；`west update` 和 `uv pip install` 需要联网。
 
-## 编译 Sweep-Pro
+## 编译 Sofle-Pro
 
 公共参数：
 
 ```shell
 export NXTKB_ROOT="/path/to/nxtkb"
-EXTRA_MODULES="$NXTKB_ROOT/Sweep-Pro;$NXTKB_ROOT/zmk-vfx-sweep-pro-display;$NXTKB_ROOT/zmk-driver-azoteq-iqs5xx;$NXTKB_ROOT/zmk-behavior-report;$NXTKB_ROOT/zmk-behavior-send-string"
-ZMK_CONFIG_DIR="$NXTKB_ROOT/Sweep-Pro/config"
+EXTRA_MODULES="$NXTKB_ROOT/Sofle-Pro;$NXTKB_ROOT/zmk-driver-azoteq-iqs5xx;$NXTKB_ROOT/zmk-behavior-report;$NXTKB_ROOT/zmk-behavior-send-string"
+ZMK_CONFIG_DIR="$NXTKB_ROOT/Sofle-Pro/config"
 ```
 
 推荐一次性编译需要的半边固件：
 
 | 固件 | Shield 组合 | 用途 |
 | :--- | :--- | :--- |
-| `sweep_left` | `sweep_left` | 左手基础版，不带屏幕 |
-| `sweep_left_display` | `sweep_left sweep_left_display_hw sweep_display` | 左手带 e-ink 屏幕 |
-| `sweep_right` | `sweep_right` | 右手基础版，不带触控板 |
-| `sweep_right_tps65` | `sweep_right sweep_right_tps65` | 右手带 Azoteq TPS65 触控板 |
+| `sofle_pro_left` | `sofle_pro_left` | 左手基础版，不带屏幕 |
+| `sofle_pro_left_display` | `sofle_pro_left sofle_pro_left_display_hw sofle_pro_display` | 左手带 e-ink 屏幕 |
+| `sofle_pro_right` | `sofle_pro_right` | 右手基础版，不带触控板 |
+| `sofle_pro_right_tps65` | `sofle_pro_right sofle_pro_right_tps65` | 右手带 Azoteq TPS65 触控板 |
 
 四种整机版本对应关系：
 
 | 整机版本 | 左手 UF2 | 右手 UF2 |
 | :--- | :--- | :--- |
-| Basic | `sweep_left` | `sweep_right` |
-| E-ink | `sweep_left_display` | `sweep_right` |
-| TPS65 Trackpad | `sweep_left` | `sweep_right_tps65` |
-| TPS65 Flagship | `sweep_left_display` | `sweep_right_tps65` |
+| Basic | `sofle_pro_left` | `sofle_pro_right` |
+| E-ink | `sofle_pro_left_display` | `sofle_pro_right` |
+| TPS65 Trackpad | `sofle_pro_left` | `sofle_pro_right_tps65` |
+| TPS65 Flagship | `sofle_pro_left_display` | `sofle_pro_right_tps65` |
 
 左手基础版。建议启用 Studio RPC over USB UART，方便用 ZMK Studio 改键：
 
 ```shell
-west build -s app -p -d build/sweep_left -b nice_nano//zmk \
+west build -s app -p -d build/sofle_pro_left -b nice_nano//zmk \
     -S studio-rpc-usb-uart -- \
-    -DSHIELD=sweep_left \
+    -DSHIELD=sofle_pro_left \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
 
-左手带屏幕。`sweep_left_display_hw` 提供 e-ink 硬件节点，`sweep_display` 提供自定义状态栏 UI：
+左手带屏幕。`sofle_pro_left_display_hw` 提供 e-ink 硬件节点，`sofle_pro_display` 提供自定义状态栏 UI：
 
 ```shell
-west build -s app -p -d build/sweep_left_display -b nice_nano//zmk \
+west build -s app -p -d build/sofle_pro_left_display -b nice_nano//zmk \
     -S studio-rpc-usb-uart -- \
-    -DSHIELD="sweep_left sweep_left_display_hw sweep_display" \
+    -DSHIELD="sofle_pro_left sofle_pro_left_display_hw sofle_pro_display" \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
@@ -121,17 +121,17 @@ west build -s app -p -d build/sweep_left_display -b nice_nano//zmk \
 右手基础版：
 
 ```shell
-west build -s app -p -d build/sweep_right -b nice_nano//zmk -- \
-    -DSHIELD=sweep_right \
+west build -s app -p -d build/sofle_pro_right -b nice_nano//zmk -- \
+    -DSHIELD=sofle_pro_right \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
 
-右手带 TPS65。`sweep_right_tps65` 提供 Azoteq IQS5xx I2C 节点，当前默认地址为 `0x74`：
+右手带 TPS65。`sofle_pro_right_tps65` 提供 Azoteq IQS5xx I2C 节点，当前默认地址为 `0x74`：
 
 ```shell
-west build -s app -p -d build/sweep_right_tps65 -b nice_nano//zmk -- \
-    -DSHIELD="sweep_right sweep_right_tps65" \
+west build -s app -p -d build/sofle_pro_right_tps65 -b nice_nano//zmk -- \
+    -DSHIELD="sofle_pro_right sofle_pro_right_tps65" \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
@@ -141,19 +141,19 @@ west build -s app -p -d build/sweep_right_tps65 -b nice_nano//zmk -- \
 构建成功后，固件位于：
 
 ```text
-build/sweep_left/zephyr/zmk.uf2
-build/sweep_left_display/zephyr/zmk.uf2
-build/sweep_right/zephyr/zmk.uf2
-build/sweep_right_tps65/zephyr/zmk.uf2
+build/sofle_pro_left/zephyr/zmk.uf2
+build/sofle_pro_left_display/zephyr/zmk.uf2
+build/sofle_pro_right/zephyr/zmk.uf2
+build/sofle_pro_right_tps65/zephyr/zmk.uf2
 ```
 
 第二次编译同一个 build 目录时，如果 CMake 参数没有变化，可以直接执行：
 
 ```shell
-west build -d build/sweep_left
-west build -d build/sweep_left_display
-west build -d build/sweep_right
-west build -d build/sweep_right_tps65
+west build -d build/sofle_pro_left
+west build -d build/sofle_pro_left_display
+west build -d build/sofle_pro_right
+west build -d build/sofle_pro_right_tps65
 ```
 
 修改了 shield、extra modules、snippets 或 `ZMK_CONFIG` 后，建议继续使用带 `-p` 的完整命令重新生成构建目录。

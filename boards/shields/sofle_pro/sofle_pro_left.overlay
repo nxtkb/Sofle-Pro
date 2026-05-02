@@ -1,4 +1,4 @@
-#include "sweep.dtsi"
+#include "sofle_pro.dtsi"
 
 &left_encoder {
 	status = "okay";

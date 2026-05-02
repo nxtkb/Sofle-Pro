@@ -2,7 +2,7 @@
 <a href="README.md">English</a> | <a href="README-zh_CN.md">中文</a>
 </div>
 
-# Ferris Sweep Pro (34-Key Split Keyboard)
+# Sofle Pro (4x6+3 Split Keyboard)
 
 A high-performance, ultra-thin split ergonomic keyboard designed for enthusiasts and power users. Featuring ZMK Studio support, magnetic tenting, and a premium low-profile aesthetic.
 ![poster](images/poster.png)
@@ -10,10 +10,11 @@ A high-performance, ultra-thin split ergonomic keyboard designed for enthusiasts
 ## Firmware Development
 
 * [Local firmware build](docs/en/local-build.md)
+* Draft 4x6+3 layer set: `config/sofle_pro-4x6.keymap`
 
 ## 🤝 Support & Links
 
-* **Taobao Store:** Search "ferris sweep" on Taobao ([ferris sweep](https://item.taobao.com/item.htm?ft=t&id=1021093959607))
+* **Taobao Store:** Search "sofle pro" on Taobao ([sofle pro](https://item.taobao.com/item.htm?ft=t&id=1021093959607))
 * **Discord:** @lilin0522
 * **WeXin:** nxtkb888 / 1736465973
 
@@ -28,8 +29,8 @@ A high-performance, ultra-thin split ergonomic keyboard designed for enthusiasts
 * **Dual Customizable Encoders:** Twin rotary encoders for intuitive volume control, page scrolling, or custom macro execution.
 * **ZMK Studio Ready:** Effortless real-time key remapping via ZMK Studio—**no coding or reflashing required.**
 * **Magnetic Tenting System:** Rapidly adjust your typing angle for maximum ergonomic comfort with our specialized magnetic stands.
-* **Ultra-Thin Profile:** Engineered for low-profile switches and **custom-designed Sweep Pro keycaps** for a sleek, modern aesthetic.
-* **Premium PBT Keycaps:** 34-key set featuring 5-sided dye-sublimation and front-printed sub-layer legends for easy navigation.
+* **Ultra-Thin Profile:** Engineered for low-profile switches and **custom-designed Sofle Pro keycaps** for a sleek, modern aesthetic.
+* **Premium PBT Keycaps:** 54-key set featuring 5-sided dye-sublimation and front-printed sub-layer legends for easy navigation.
 * **Dual-Mode Wireless:** Seamlessly switch between high-speed USB-C and stable Bluetooth connectivity.
 
 ---
@@ -38,12 +39,12 @@ A high-performance, ultra-thin split ergonomic keyboard designed for enthusiasts
 
 | Component | Specification |
 | :--- | :--- |
-| **Layout** | 34 Keys (Ferris Sweep Variant) |
+| **Layout** | 4x6+3 split layout (54 keys) |
 | **Display** | **1.54" E-ink Display** (High-contrast Electronic Paper) |
 | **Pointing Device** | Azoteq TPS65 capacitive trackpad |
 | **Input** | Dual Clickable Rotary Encoders |
 | **Firmware** | ZMK Firmware (Studio Compatible) |
-| **Keycaps** | **Custom-Designed for Sweep Pro** (Sculpted Low-Profile PBT) |
+| **Keycaps** | **Custom-Designed for Sofle Pro** (Sculpted Low-Profile PBT) |
 | **Switches** | **4 Low-Profile Options Available:**<br>• Kailh Silent Linear<br>• Kailh Silent Tactile<br>• Kailh Clicky White<br>• Gateron Low Profile Blue |
 | **Battery** | **4000mAh Total Capacity** (Dual 2000mAh Li-ion Batteries) |
 
@@ -77,9 +78,9 @@ Unlike traditional OLED screens that can be distracting or power-hungry, our **1
 
 ---
 
-## 🎨 Custom-Designed Sweep Pro Keycaps
+## 🎨 Custom-Designed Sofle Pro Keycaps
 
-To complement the ultra-thin profile of the Ferris Sweep Pro, we’ve developed a **bespoke set of low-profile PBT keycaps**. These aren't just off-the-shelf parts; they are engineered specifically for this 34-key layout.
+To complement the ultra-thin profile of the Sofle Pro, we’ve developed a **bespoke set of low-profile PBT keycaps**. These aren't just off-the-shelf parts; they are engineered specifically for this 4x6+3 layout.
 
 * **Premium PBT Material:** High-grade PBT ensures a textured, non-slip feel that resists oil and "shining" even after years of heavy typing.
 * **5-Sided Dye-Sublimation:** Our advanced printing process allows for vibrant, permanent legends that wrap around the edges, providing a cohesive and premium aesthetic.
@@ -103,7 +104,7 @@ Choose the perfect tactile experience for your workflow. We offer four premium l
 | **Kailh Clicky White** | Sharp, crisp tactile bump | 🔊 Satisfying Click | Users who love the classic mechanical "click" feedback. |
 | **Gateron Low Blue** | Classic tactile click | 🔉 Moderate Click | A balanced, traditional clicky experience with a light touch. |
 
-> **Tip:** If you are planning to use your Sweep Pro in a shared workspace or office, we highly recommend the **Kailh Silent** series to maintain a professional (and quiet) environment.
+> **Tip:** If you are planning to use your Sofle Pro in a shared workspace or office, we highly recommend the **Kailh Silent** series to maintain a professional (and quiet) environment.
 
 ![switches1](images/switches1.png)
 ![switches2](images/switches2.png)
@@ -118,7 +119,7 @@ Choose the perfect tactile experience for your workflow. We offer four premium l
 
 ## 🔍 More Professional Details
 
-We’ve obsessively refined the Ferris Sweep Pro to ensure every interaction feels premium and intentional.
+We’ve obsessively refined the Sofle Pro to ensure every interaction feels premium and intentional.
 
 ### 🔄 Dual Rotary Encoders
 Precision-machined dual encoders offer tactile scrolling at your fingertips. Fully customizable via ZMK, with default quick-access functions:
@@ -127,7 +128,7 @@ Precision-machined dual encoders offer tactile scrolling at your fingertips. Ful
 * **Customizable:** Map to Zoom, Undo/Redo, or brush size adjustment in your favorite creative apps.
 
 ### 🔘 Dedicated Metal Reset Button
-No more fumbling with paperclips or shorting pins. 
+No more fumbling with paperclips or shorting pins.
 * **Hardware-Level Control:** A robust metal button for quick system resets.
 * **Bootloader Mode:** Simply **double-click within 0.5s** to enter BIOS/Bootloader mode for effortless firmware updates.
 
@@ -151,7 +152,7 @@ We offer 4 configurations to suit your specific workflow:
 
 ### 2. Choose Your Bundle
 * **Standard Kit:** Your chosen keyboard version only.
-* **Bundle 1 (Ergo Pack):** Chosen Keyboard Version + **Magnetic Tenting Stands** 
+* **Bundle 1 (Ergo Pack):** Chosen Keyboard Version + **Magnetic Tenting Stands**
 
 
 ### 3. 🎁 Exclusive Bonus
@@ -169,10 +170,10 @@ We offer 4 configurations to suit your specific workflow:
 
 ## ⌨️ Default Layout
 
-Our default 34-key layout is designed for maximum efficiency with minimal finger travel. 
+Our default 4x6+3 layout is designed for maximum efficiency with minimal finger travel.
 
 ![layout](images/keymap.png)
---- 
+---
 
 ## 🎨 More Color Options
 

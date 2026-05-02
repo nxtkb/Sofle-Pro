@@ -1,8 +1,8 @@
-# Sweep-Pro for e-ink vX.Y.Z
+# Sofle-Pro for e-ink vX.Y.Z
 
-Sweep-Pro Firmware Update
+Sofle-Pro Firmware Update
 
-This firmware is for the Sweep-Pro, compatible with the version featuring an e-ink screen and touchpad.
+This firmware is for the Sofle-Pro, compatible with the version featuring an e-ink screen and touchpad.
 
 ## Caution
 

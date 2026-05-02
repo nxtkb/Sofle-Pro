@@ -1,0 +1,16 @@
+file_format: "1"
+id: sofle-pro
+name: Sofle-Pro
+type: shield
+url: https://github.com/nxtkb/Sofle-Pro/
+requires: [pro_micro]
+features:
+  - keys
+  - encoders
+  - Azoteq TPS65 trackpad
+  - ink display
+siblings:
+  - sofle_pro_left
+  - sofle_pro_left_display_hw
+  - sofle_pro_right
+  - sofle_pro_right_tps65
