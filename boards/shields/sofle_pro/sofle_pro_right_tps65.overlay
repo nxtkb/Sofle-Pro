@@ -30,7 +30,7 @@
 		reg = <0x74>;
 		status = "okay";
 
-		rdy-gpios = <&gpio0 22 GPIO_ACTIVE_HIGH>;
+		rdy-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
 
 		one-finger-tap;
 		two-finger-tap;
