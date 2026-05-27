@@ -116,8 +116,8 @@
 
 	mipi_dbi {
 		compatible = "zephyr,mipi-dbi-spi";
-		dc-gpios = <&gpio0 22 GPIO_ACTIVE_HIGH>;      /* PCB: EPD_DC, nice!nano D4 */
-		reset-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;     /* PCB: EPD_RST, nice!nano E6 */
+		dc-gpios = <&gpio0 22 GPIO_ACTIVE_HIGH>;      /* PCB: EPD_DC, Pro Micro D4 */
+		reset-gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;    /* PCB: EPD_RST, Pro Micro D7 / E6 */
 		spi-dev = <&spi1>;
 		write-only;
 		#address-cells = <1>;
@@ -132,7 +132,7 @@
 			rotation = <90>;
 
 			mipi-max-frequency = <4000000>;
-			busy-gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>; /* PCB: EPD_BUSY, nice!nano D7 */
+			busy-gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;  /* PCB: EPD_BUSY, Pro Micro D6 / D7 */
 			tssv = <0x80>;
 
 			full {
@@ -183,7 +183,7 @@
 
 &spi1 {
 	status = "okay";
-	cs-gpios = <&gpio0 24 GPIO_ACTIVE_LOW>; /* PCB: EPD_CS, nice!nano B6 */
+	cs-gpios = <&gpio0 9 GPIO_ACTIVE_LOW>; /* PCB: EPD_CS, Pro Micro D10 / B6 */
 };
 
 &i2c0 {

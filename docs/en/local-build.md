@@ -72,6 +72,30 @@ uv pip install -r zephyr/scripts/requirements-base.txt protobuf
 
 ## Build Sofle-Pro
 
+The recommended local path is the repository script. It removes old UF2 files from `$NXTKB_ROOT/Sofle-Pro/firmware` first, then copies newly built firmware to that fixed directory:
+
+```shell
+export NXTKB_ROOT="/path/to/nxtkb"
+cd "$NXTKB_ROOT/Sofle-Pro"
+./scripts/build-firmware.sh
+```
+
+To build only the dongle:
+
+```shell
+./scripts/build-firmware.sh dongle
+```
+
+Fixed output names:
+
+```text
+firmware/sofle_pro_dongle.uf2
+firmware/sofle_pro_left_peripheral.uf2
+firmware/sofle_pro_right_peripheral.uf2
+```
+
+The manual commands below are what the script runs internally and are useful for troubleshooting.
+
 Common parameters:
 
 ```shell

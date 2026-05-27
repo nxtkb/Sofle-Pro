@@ -72,6 +72,30 @@ uv pip install -r zephyr/scripts/requirements-base.txt protobuf
 
 ## 编译 Sofle-Pro
 
+推荐使用仓库里的本地脚本编译。脚本会先删除 `$NXTKB_ROOT/Sofle-Pro/firmware` 里的旧 UF2，再把新固件复制到这个固定目录：
+
+```shell
+export NXTKB_ROOT="/path/to/nxtkb"
+cd "$NXTKB_ROOT/Sofle-Pro"
+./scripts/build-firmware.sh
+```
+
+只编译 dongle 时：
+
+```shell
+./scripts/build-firmware.sh dongle
+```
+
+固定输出文件名：
+
+```text
+firmware/sofle_pro_dongle.uf2
+firmware/sofle_pro_left_peripheral.uf2
+firmware/sofle_pro_right_peripheral.uf2
+```
+
+下面是脚本内部使用的手动命令，排查问题时可以直接运行。
+
 公共参数：
 
 ```shell
