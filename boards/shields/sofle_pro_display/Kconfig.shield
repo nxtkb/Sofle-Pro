@@ -1,2 +1,0 @@
-config SHIELD_SOFLE_PRO_DISPLAY
-    def_bool $(shields_list_contains,sofle_pro_display)

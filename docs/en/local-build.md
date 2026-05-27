@@ -9,7 +9,7 @@ cd "$NXTKB_ROOT/zmkfirmware/zmk"
 
 The following commands assume you are running them from the ZMK west workspace root. `$NXTKB_ROOT/Sofle-Pro` is the keyboard config and shield repository, not the west workspace root. Do not run `west build` directly inside the `Sofle-Pro` directory.
 
-The local build now uses the official `zmkfirmware/zmk` checkout. The Sofle-Pro display status screen is vendored in this repository as the optional `sofle_pro_display` shield, so display builds only need to include `sofle_pro_display` in the `SHIELD` list.
+The local build now uses the official `zmkfirmware/zmk` checkout. The Sofle-Pro display status screen uses the standalone `zmk-vfx-sweep-pro-display` module, the same as Sweep-Pro, so display builds need that module in `ZMK_EXTRA_MODULES` and `sweep_display` in the `SHIELD` list.
 
 All Sofle-Pro hardware variants share one `config/sofle_pro.keymap`. The display and trackpad are optional shields that get composed into the build, so one repository can produce 4 half-keyboard firmware files. Users only need to pick the UF2 files matching their hardware.
 
@@ -76,7 +76,7 @@ Common parameters:
 
 ```shell
 export NXTKB_ROOT="/path/to/nxtkb"
-EXTRA_MODULES="$NXTKB_ROOT/Sofle-Pro;$NXTKB_ROOT/zmk-driver-azoteq-iqs5xx;$NXTKB_ROOT/zmk-behavior-report;$NXTKB_ROOT/zmk-behavior-send-string"
+EXTRA_MODULES="$NXTKB_ROOT/Sofle-Pro;$NXTKB_ROOT/zmk-vfx-sweep-pro-display;$NXTKB_ROOT/zmk-driver-azoteq-iqs5xx;$NXTKB_ROOT/zmk-behavior-report;$NXTKB_ROOT/zmk-behavior-send-string"
 ZMK_CONFIG_DIR="$NXTKB_ROOT/Sofle-Pro/config"
 ```
 
@@ -85,7 +85,7 @@ Build the half-keyboard firmware files you need:
 | Firmware | Shield combination | Use |
 | :--- | :--- | :--- |
 | `sofle_pro_left` | `sofle_pro_left` | Base left half, no display |
-| `sofle_pro_left_display` | `sofle_pro_left sofle_pro_left_display_hw sofle_pro_display` | Left half with e-ink display |
+| `sofle_pro_left_display` | `sofle_pro_left sofle_pro_left_display_hw sweep_display` | Left half with e-ink display |
 | `sofle_pro_right` | `sofle_pro_right` | Base right half, no trackpad |
 | `sofle_pro_right_tps65` | `sofle_pro_right sofle_pro_right_tps65` | Right half with Azoteq TPS65 trackpad |
 
@@ -108,12 +108,12 @@ west build -s app -p -d build/sofle_pro_left -b nice_nano//zmk \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
 
-Left half with display. `sofle_pro_left_display_hw` provides the e-ink hardware node, and `sofle_pro_display` provides the custom status screen UI:
+Left half with display. `sofle_pro_left_display_hw` provides the e-ink hardware node, and `sweep_display` from `zmk-vfx-sweep-pro-display` provides the custom status screen UI:
 
 ```shell
 west build -s app -p -d build/sofle_pro_left_display -b nice_nano//zmk \
     -S studio-rpc-usb-uart -- \
-    -DSHIELD="sofle_pro_left sofle_pro_left_display_hw sofle_pro_display" \
+    -DSHIELD="sofle_pro_left sofle_pro_left_display_hw sweep_display" \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```

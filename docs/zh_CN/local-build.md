@@ -9,7 +9,7 @@ cd "$NXTKB_ROOT/zmkfirmware/zmk"
 
 后续命令默认从 ZMK workspace 根目录执行。`$NXTKB_ROOT/Sofle-Pro` 是键盘配置和 shield 仓库，不是 west workspace 根目录。不要在 `Sofle-Pro` 目录里直接执行 `west build`。
 
-当前本地编译使用官方 `zmkfirmware/zmk` checkout。Sofle-Pro 的屏幕状态栏已经作为可选 `sofle_pro_display` shield 放进本仓库，所以编译带屏幕的左手固件时只需要把 `sofle_pro_display` 放进 `SHIELD` 列表。
+当前本地编译使用官方 `zmkfirmware/zmk` checkout。Sofle-Pro 的屏幕状态栏改为和 Sweep-Pro 一样使用独立模块 `zmk-vfx-sweep-pro-display`，所以编译带屏幕的左手固件时需要同时加入该 module，并把 `sweep_display` 放进 `SHIELD` 列表。
 
 Sofle-Pro 的 keymap 是所有硬件版本共用的一份 `config/sofle_pro.keymap`。屏幕和触控板作为可选 shield 组合进构建，因此同一个仓库可以产出 4 个半边固件，用户只需要按自己的硬件版本选择对应 UF2。
 
@@ -76,7 +76,7 @@ uv pip install -r zephyr/scripts/requirements-base.txt protobuf
 
 ```shell
 export NXTKB_ROOT="/path/to/nxtkb"
-EXTRA_MODULES="$NXTKB_ROOT/Sofle-Pro;$NXTKB_ROOT/zmk-driver-azoteq-iqs5xx;$NXTKB_ROOT/zmk-behavior-report;$NXTKB_ROOT/zmk-behavior-send-string"
+EXTRA_MODULES="$NXTKB_ROOT/Sofle-Pro;$NXTKB_ROOT/zmk-vfx-sweep-pro-display;$NXTKB_ROOT/zmk-driver-azoteq-iqs5xx;$NXTKB_ROOT/zmk-behavior-report;$NXTKB_ROOT/zmk-behavior-send-string"
 ZMK_CONFIG_DIR="$NXTKB_ROOT/Sofle-Pro/config"
 ```
 
@@ -85,7 +85,7 @@ ZMK_CONFIG_DIR="$NXTKB_ROOT/Sofle-Pro/config"
 | 固件 | Shield 组合 | 用途 |
 | :--- | :--- | :--- |
 | `sofle_pro_left` | `sofle_pro_left` | 左手基础版，不带屏幕 |
-| `sofle_pro_left_display` | `sofle_pro_left sofle_pro_left_display_hw sofle_pro_display` | 左手带 e-ink 屏幕 |
+| `sofle_pro_left_display` | `sofle_pro_left sofle_pro_left_display_hw sweep_display` | 左手带 e-ink 屏幕 |
 | `sofle_pro_right` | `sofle_pro_right` | 右手基础版，不带触控板 |
 | `sofle_pro_right_tps65` | `sofle_pro_right sofle_pro_right_tps65` | 右手带 Azoteq TPS65 触控板 |
 
@@ -108,12 +108,12 @@ west build -s app -p -d build/sofle_pro_left -b nice_nano//zmk \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
 
-左手带屏幕。`sofle_pro_left_display_hw` 提供 e-ink 硬件节点，`sofle_pro_display` 提供自定义状态栏 UI：
+左手带屏幕。`sofle_pro_left_display_hw` 提供 e-ink 硬件节点，`zmk-vfx-sweep-pro-display` 里的 `sweep_display` 提供自定义状态栏 UI：
 
 ```shell
 west build -s app -p -d build/sofle_pro_left_display -b nice_nano//zmk \
     -S studio-rpc-usb-uart -- \
-    -DSHIELD="sofle_pro_left sofle_pro_left_display_hw sofle_pro_display" \
+    -DSHIELD="sofle_pro_left sofle_pro_left_display_hw sweep_display" \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```

@@ -1,2 +1,0 @@
-target_sources_ifdef(CONFIG_ZMK_DISPLAY app PRIVATE sofle_pro_logo_img.c)
-target_sources_ifdef(CONFIG_ZMK_DISPLAY app PRIVATE sofle_pro_lv_custom_symbol.c)
