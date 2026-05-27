@@ -6,6 +6,7 @@ NXTKB_ROOT="${NXTKB_ROOT:-$(dirname "$SOFLE_PRO_ROOT")}"
 ZMK_WORKSPACE="${ZMK_WORKSPACE:-$NXTKB_ROOT/zmkfirmware/zmk}"
 FIRMWARE_DIR="${FIRMWARE_DIR:-$SOFLE_PRO_ROOT/firmware}"
 ZMK_CONFIG_DIR="$SOFLE_PRO_ROOT/config"
+ZMK_DEBUG_CONF="$SOFLE_PRO_ROOT/config/sofle_pro_dongle_debug.conf"
 EXTRA_MODULES="${EXTRA_MODULES:-$SOFLE_PRO_ROOT;$NXTKB_ROOT/zmk-vfx-sweep-pro-display;$NXTKB_ROOT/zmk-driver-azoteq-iqs5xx;$NXTKB_ROOT/zmk-behavior-report;$NXTKB_ROOT/zmk-behavior-send-string}"
 
 if [[ -d "$HOME/miniforge3/bin" ]]; then
@@ -23,11 +24,21 @@ rm -f "$FIRMWARE_DIR"/*.uf2
 cd "$ZMK_WORKSPACE"
 
 build_dongle() {
+    local debug="${1:-false}"
+    local snippets=(-S studio-rpc-usb-uart)
+    local extra_conf=()
+
+    if [[ "$debug" == "true" ]]; then
+        snippets+=(-S zmk-usb-logging)
+        extra_conf=(-DEXTRA_CONF_FILE="$ZMK_DEBUG_CONF")
+    fi
+
     west build -s app -p -d build/sofle_pro_dongle -b nice_nano//zmk \
-        -S studio-rpc-usb-uart -- \
+        "${snippets[@]}" -- \
         -DSHIELD="sofle_pro_dongle sweep_display" \
         -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
-        -DZMK_CONFIG="$ZMK_CONFIG_DIR"
+        -DZMK_CONFIG="$ZMK_CONFIG_DIR" \
+        "${extra_conf[@]}"
 
     cp build/sofle_pro_dongle/zephyr/zmk.uf2 "$FIRMWARE_DIR/sofle_pro_dongle.uf2"
 }
@@ -63,6 +74,9 @@ for target in "${targets[@]}"; do
     case "$target" in
         dongle|sofle_pro_dongle)
             build_dongle
+            ;;
+        dongle-logging|dongle-log|sofle_pro_dongle_logging)
+            build_dongle true
             ;;
         left|sofle_pro_left|sofle_pro_left_peripheral)
             build_left

@@ -1,6 +1,7 @@
 #include <dt-bindings/zmk/matrix_transform.h>
 #include <physical_layouts.dtsi>
 #include <zephyr/dt-bindings/mipi_dbi/mipi_dbi.h>
+#include <zephyr/dt-bindings/pinctrl/nrf-pinctrl.h>
 
 / {
 	chosen {
@@ -184,6 +185,21 @@
 &spi1 {
 	status = "okay";
 	cs-gpios = <&gpio0 9 GPIO_ACTIVE_LOW>; /* PCB: EPD_CS, Pro Micro D10 / B6 */
+};
+
+&i2c0_default {
+	group1 {
+		psels = <NRF_PSEL(TWIM_SDA, 0, 20)>, /* PCB: U1 SDA pad / Pro Micro D3 */
+			<NRF_PSEL(TWIM_SCL, 0, 17)>; /* PCB: U1 SCL pad / Pro Micro D2 */
+	};
+};
+
+&i2c0_sleep {
+	group1 {
+		psels = <NRF_PSEL(TWIM_SDA, 0, 20)>, /* PCB: U1 SDA pad / Pro Micro D3 */
+			<NRF_PSEL(TWIM_SCL, 0, 17)>; /* PCB: U1 SCL pad / Pro Micro D2 */
+		low-power-enable;
+	};
 };
 
 &i2c0 {
