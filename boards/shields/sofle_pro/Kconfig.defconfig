@@ -1,6 +1,5 @@
 
-
-if SHIELD_SOFLE_PRO_LEFT
+if SHIELD_SOFLE_PRO_DONGLE
 # Name must be less than 16 characters long!
 config ZMK_KEYBOARD_NAME
     default "Sofle Pro"
@@ -8,10 +7,24 @@ config ZMK_KEYBOARD_NAME
 config ZMK_SPLIT_ROLE_CENTRAL
     default y
 
-endif
-
-
-if SHIELD_SOFLE_PRO_LEFT || SHIELD_SOFLE_PRO_RIGHT || SHIELD_SOFLE_PRO_LEFT_DISPLAY_HW || SHIELD_SOFLE_PRO_RIGHT_TPS65
 config ZMK_SPLIT
     default y
+
+config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
+    default 2
+
+config BT_MAX_CONN
+    default 7
+
+config BT_MAX_PAIRED
+    default 7
+
+endif
+
+if SHIELD_SOFLE_PRO_LEFT || SHIELD_SOFLE_PRO_RIGHT
+config ZMK_SPLIT
+    default y
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default n
 endif

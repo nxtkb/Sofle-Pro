@@ -10,7 +10,6 @@ features:
   - Azoteq TPS65 trackpad
   - ink display
 siblings:
+  - sofle_pro_dongle
   - sofle_pro_left
-  - sofle_pro_left_display_hw
   - sofle_pro_right
-  - sofle_pro_right_tps65

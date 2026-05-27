@@ -3,11 +3,3 @@
 &left_encoder {
 	status = "okay";
 };
-
-&tps65_split {
-	status = "okay";
-};
-
-&tps65_listener {
-	status = "okay";
-};

@@ -9,9 +9,9 @@ cd "$NXTKB_ROOT/zmkfirmware/zmk"
 
 The following commands assume you are running them from the ZMK west workspace root. `$NXTKB_ROOT/Sofle-Pro` is the keyboard config and shield repository, not the west workspace root. Do not run `west build` directly inside the `Sofle-Pro` directory.
 
-The local build now uses the official `zmkfirmware/zmk` checkout. The Sofle-Pro display status screen uses the standalone `zmk-vfx-sweep-pro-display` module, the same as Sweep-Pro, so display builds need that module in `ZMK_EXTRA_MODULES` and `sweep_display` in the `SHIELD` list.
+The local build now uses the official `zmkfirmware/zmk` checkout. The dongle branch uses a three-firmware structure: `sofle_pro_dongle` is the central, and both keyboard halves are split peripherals. The e-ink display and TPS65 trackpad are on the dongle PCB. The display status screen still uses the standalone `zmk-vfx-sweep-pro-display` module, so the dongle build needs that module in `ZMK_EXTRA_MODULES` and `sweep_display` in the `SHIELD` list.
 
-All Sofle-Pro hardware variants share one `config/sofle_pro.keymap`. The display and trackpad are optional shields that get composed into the build, so one repository can produce 4 half-keyboard firmware files. Users only need to pick the UF2 files matching their hardware.
+All Sofle-Pro builds still share `config/sofle_pro.keymap`. The dongle handles keymap state, layers, HID, ZMK Studio, the display, and the TPS65 trackpad. The left and right halves only capture key/encoder events and forward them to the dongle over BLE split.
 
 ## Dependencies
 
@@ -80,58 +80,42 @@ EXTRA_MODULES="$NXTKB_ROOT/Sofle-Pro;$NXTKB_ROOT/zmk-vfx-sweep-pro-display;$NXTK
 ZMK_CONFIG_DIR="$NXTKB_ROOT/Sofle-Pro/config"
 ```
 
-Build the half-keyboard firmware files you need:
+Build these three firmware files:
 
 | Firmware | Shield combination | Use |
 | :--- | :--- | :--- |
-| `sofle_pro_left` | `sofle_pro_left` | Base left half, no display |
-| `sofle_pro_left_display` | `sofle_pro_left sofle_pro_left_display_hw sweep_display` | Left half with e-ink display |
-| `sofle_pro_right` | `sofle_pro_right` | Base right half, no trackpad |
-| `sofle_pro_right_tps65` | `sofle_pro_right sofle_pro_right_tps65` | Right half with Azoteq TPS65 trackpad |
+| `sofle_pro_dongle` | `sofle_pro_dongle sweep_display` | Dongle central with e-ink, TPS65, and ZMK Studio |
+| `sofle_pro_left_peripheral` | `sofle_pro_left` | Left peripheral |
+| `sofle_pro_right_peripheral` | `sofle_pro_right` | Right peripheral |
 
-Use these combinations for the 4 keyboard variants:
-
-| Keyboard variant | Left UF2 | Right UF2 |
-| :--- | :--- | :--- |
-| Basic | `sofle_pro_left` | `sofle_pro_right` |
-| E-ink | `sofle_pro_left_display` | `sofle_pro_right` |
-| TPS65 Trackpad | `sofle_pro_left` | `sofle_pro_right_tps65` |
-| TPS65 Flagship | `sofle_pro_left_display` | `sofle_pro_right_tps65` |
-
-Base left half. Studio RPC over USB UART is useful for ZMK Studio remapping:
+Dongle central. Studio RPC over USB UART is useful for ZMK Studio remapping:
 
 ```shell
-west build -s app -p -d build/sofle_pro_left -b nice_nano//zmk \
+west build -s app -p -d build/sofle_pro_dongle -b nice_nano//zmk \
     -S studio-rpc-usb-uart -- \
+    -DSHIELD="sofle_pro_dongle sweep_display" \
+    -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
+    -DZMK_CONFIG="$ZMK_CONFIG_DIR"
+```
+
+Left peripheral:
+
+```shell
+west build -s app -p -d build/sofle_pro_left_peripheral -b nice_nano//zmk -- \
     -DSHIELD=sofle_pro_left \
+    -DCONFIG_ZMK_SPLIT=y \
+    -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
 
-Left half with display. `sofle_pro_left_display_hw` provides the e-ink hardware node, and `sweep_display` from `zmk-vfx-sweep-pro-display` provides the custom status screen UI:
+Right peripheral:
 
 ```shell
-west build -s app -p -d build/sofle_pro_left_display -b nice_nano//zmk \
-    -S studio-rpc-usb-uart -- \
-    -DSHIELD="sofle_pro_left sofle_pro_left_display_hw sweep_display" \
-    -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
-    -DZMK_CONFIG="$ZMK_CONFIG_DIR"
-```
-
-Base right half:
-
-```shell
-west build -s app -p -d build/sofle_pro_right -b nice_nano//zmk -- \
+west build -s app -p -d build/sofle_pro_right_peripheral -b nice_nano//zmk -- \
     -DSHIELD=sofle_pro_right \
-    -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
-    -DZMK_CONFIG="$ZMK_CONFIG_DIR"
-```
-
-Right half with TPS65. `sofle_pro_right_tps65` provides the Azoteq IQS5xx I2C node, currently using address `0x74`:
-
-```shell
-west build -s app -p -d build/sofle_pro_right_tps65 -b nice_nano//zmk -- \
-    -DSHIELD="sofle_pro_right sofle_pro_right_tps65" \
+    -DCONFIG_ZMK_SPLIT=y \
+    -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
@@ -141,19 +125,17 @@ The commands explicitly use `-s app` because the current directory is the worksp
 After a successful build, the firmware files are:
 
 ```text
-build/sofle_pro_left/zephyr/zmk.uf2
-build/sofle_pro_left_display/zephyr/zmk.uf2
-build/sofle_pro_right/zephyr/zmk.uf2
-build/sofle_pro_right_tps65/zephyr/zmk.uf2
+build/sofle_pro_dongle/zephyr/zmk.uf2
+build/sofle_pro_left_peripheral/zephyr/zmk.uf2
+build/sofle_pro_right_peripheral/zephyr/zmk.uf2
 ```
 
 For later builds with the same CMake parameters, you can usually reuse the build directories:
 
 ```shell
-west build -d build/sofle_pro_left
-west build -d build/sofle_pro_left_display
-west build -d build/sofle_pro_right
-west build -d build/sofle_pro_right_tps65
+west build -d build/sofle_pro_dongle
+west build -d build/sofle_pro_left_peripheral
+west build -d build/sofle_pro_right_peripheral
 ```
 
 If you change the shield, extra modules, snippets, or `ZMK_CONFIG`, rerun the full command with `-p` to regenerate the build directory.
@@ -182,4 +164,4 @@ source directory "." does not contain a CMakeLists.txt
 
 you ran the command from the workspace root without `-s app`.
 
-The right-half build may show Kconfig warnings about USB or central battery proxy options being disabled for the split peripheral role. Those warnings come from the left/right role difference. If `zmk.uf2` is generated, the build succeeded. Trackpad smooth scrolling is configured in the left central firmware; the right trackpad firmware only captures and forwards input events.
+Before flashing the dongle structure for the first time, flash `settings_reset` to the dongle, left half, and right half. Then flash the three production UF2 files. The left and right halves are peripherals and will not connect to the host as standalone keyboards; the host connects only to `sofle_pro_dongle`.

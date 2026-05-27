@@ -25,7 +25,7 @@ A high-performance, ultra-thin split ergonomic keyboard designed for enthusiasts
 
 * **E-ink Status Display:** 1.54" high-contrast E-ink screen providing real-time feedback on battery life, active layers, **split pairing status**, and connection mode.
 * **Massive Battery Life:** Equipped with a **4000mAh total capacity** (2000mAh per side) for months of wireless usage on a single charge.
-* **Integrated Azoteq TPS65 Trackpad:** Smooth cursor control, click gestures, drag, and two-axis scrolling from the right half.
+* **Dongle-mounted Azoteq TPS65 Trackpad:** Smooth cursor control, click gestures, drag, and two-axis scrolling through the dongle central.
 * **Dual Customizable Encoders:** Twin rotary encoders for intuitive volume control, page scrolling, or custom macro execution.
 * **ZMK Studio Ready:** Effortless real-time key remapping via ZMK Studio—**no coding or reflashing required.**
 * **Magnetic Tenting System:** Rapidly adjust your typing angle for maximum ergonomic comfort with our specialized magnetic stands.

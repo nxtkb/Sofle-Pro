@@ -9,9 +9,9 @@ cd "$NXTKB_ROOT/zmkfirmware/zmk"
 
 后续命令默认从 ZMK workspace 根目录执行。`$NXTKB_ROOT/Sofle-Pro` 是键盘配置和 shield 仓库，不是 west workspace 根目录。不要在 `Sofle-Pro` 目录里直接执行 `west build`。
 
-当前本地编译使用官方 `zmkfirmware/zmk` checkout。Sofle-Pro 的屏幕状态栏改为和 Sweep-Pro 一样使用独立模块 `zmk-vfx-sweep-pro-display`，所以编译带屏幕的左手固件时需要同时加入该 module，并把 `sweep_display` 放进 `SHIELD` 列表。
+当前本地编译使用官方 `zmkfirmware/zmk` checkout。dongle 分支把 Sofle-Pro 改为三固件结构：`sofle_pro_dongle` 是 central，左右手都是 split peripheral。电子墨水屏和 TPS65 触控板都在 dongle PCB 上，屏幕状态栏继续使用独立模块 `zmk-vfx-sweep-pro-display`，因此 dongle 固件需要同时加入该 module，并把 `sweep_display` 放进 `SHIELD` 列表。
 
-Sofle-Pro 的 keymap 是所有硬件版本共用的一份 `config/sofle_pro.keymap`。屏幕和触控板作为可选 shield 组合进构建，因此同一个仓库可以产出 4 个半边固件，用户只需要按自己的硬件版本选择对应 UF2。
+Sofle-Pro 的 keymap 仍然共用 `config/sofle_pro.keymap`。dongle 负责 keymap、layer、HID、ZMK Studio、墨水屏和 TPS65；左右手只采集按键/编码器事件并通过 BLE split 发给 dongle。
 
 ## 依赖
 
@@ -80,58 +80,42 @@ EXTRA_MODULES="$NXTKB_ROOT/Sofle-Pro;$NXTKB_ROOT/zmk-vfx-sweep-pro-display;$NXTK
 ZMK_CONFIG_DIR="$NXTKB_ROOT/Sofle-Pro/config"
 ```
 
-推荐一次性编译需要的半边固件：
+推荐一次性编译这三个固件：
 
 | 固件 | Shield 组合 | 用途 |
 | :--- | :--- | :--- |
-| `sofle_pro_left` | `sofle_pro_left` | 左手基础版，不带屏幕 |
-| `sofle_pro_left_display` | `sofle_pro_left sofle_pro_left_display_hw sweep_display` | 左手带 e-ink 屏幕 |
-| `sofle_pro_right` | `sofle_pro_right` | 右手基础版，不带触控板 |
-| `sofle_pro_right_tps65` | `sofle_pro_right sofle_pro_right_tps65` | 右手带 Azoteq TPS65 触控板 |
+| `sofle_pro_dongle` | `sofle_pro_dongle sweep_display` | dongle central，带 e-ink、TPS65、ZMK Studio |
+| `sofle_pro_left_peripheral` | `sofle_pro_left` | 左手从手 |
+| `sofle_pro_right_peripheral` | `sofle_pro_right` | 右手从手 |
 
-四种整机版本对应关系：
-
-| 整机版本 | 左手 UF2 | 右手 UF2 |
-| :--- | :--- | :--- |
-| Basic | `sofle_pro_left` | `sofle_pro_right` |
-| E-ink | `sofle_pro_left_display` | `sofle_pro_right` |
-| TPS65 Trackpad | `sofle_pro_left` | `sofle_pro_right_tps65` |
-| TPS65 Flagship | `sofle_pro_left_display` | `sofle_pro_right_tps65` |
-
-左手基础版。建议启用 Studio RPC over USB UART，方便用 ZMK Studio 改键：
+dongle central。建议启用 Studio RPC over USB UART，方便用 ZMK Studio 改键：
 
 ```shell
-west build -s app -p -d build/sofle_pro_left -b nice_nano//zmk \
+west build -s app -p -d build/sofle_pro_dongle -b nice_nano//zmk \
     -S studio-rpc-usb-uart -- \
+    -DSHIELD="sofle_pro_dongle sweep_display" \
+    -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
+    -DZMK_CONFIG="$ZMK_CONFIG_DIR"
+```
+
+左手从手：
+
+```shell
+west build -s app -p -d build/sofle_pro_left_peripheral -b nice_nano//zmk -- \
     -DSHIELD=sofle_pro_left \
+    -DCONFIG_ZMK_SPLIT=y \
+    -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
 
-左手带屏幕。`sofle_pro_left_display_hw` 提供 e-ink 硬件节点，`zmk-vfx-sweep-pro-display` 里的 `sweep_display` 提供自定义状态栏 UI：
+右手从手：
 
 ```shell
-west build -s app -p -d build/sofle_pro_left_display -b nice_nano//zmk \
-    -S studio-rpc-usb-uart -- \
-    -DSHIELD="sofle_pro_left sofle_pro_left_display_hw sweep_display" \
-    -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
-    -DZMK_CONFIG="$ZMK_CONFIG_DIR"
-```
-
-右手基础版：
-
-```shell
-west build -s app -p -d build/sofle_pro_right -b nice_nano//zmk -- \
+west build -s app -p -d build/sofle_pro_right_peripheral -b nice_nano//zmk -- \
     -DSHIELD=sofle_pro_right \
-    -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
-    -DZMK_CONFIG="$ZMK_CONFIG_DIR"
-```
-
-右手带 TPS65。`sofle_pro_right_tps65` 提供 Azoteq IQS5xx I2C 节点，当前默认地址为 `0x74`：
-
-```shell
-west build -s app -p -d build/sofle_pro_right_tps65 -b nice_nano//zmk -- \
-    -DSHIELD="sofle_pro_right sofle_pro_right_tps65" \
+    -DCONFIG_ZMK_SPLIT=y \
+    -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n \
     -DZMK_EXTRA_MODULES="$EXTRA_MODULES" \
     -DZMK_CONFIG="$ZMK_CONFIG_DIR"
 ```
@@ -141,19 +125,17 @@ west build -s app -p -d build/sofle_pro_right_tps65 -b nice_nano//zmk -- \
 构建成功后，固件位于：
 
 ```text
-build/sofle_pro_left/zephyr/zmk.uf2
-build/sofle_pro_left_display/zephyr/zmk.uf2
-build/sofle_pro_right/zephyr/zmk.uf2
-build/sofle_pro_right_tps65/zephyr/zmk.uf2
+build/sofle_pro_dongle/zephyr/zmk.uf2
+build/sofle_pro_left_peripheral/zephyr/zmk.uf2
+build/sofle_pro_right_peripheral/zephyr/zmk.uf2
 ```
 
 第二次编译同一个 build 目录时，如果 CMake 参数没有变化，可以直接执行：
 
 ```shell
-west build -d build/sofle_pro_left
-west build -d build/sofle_pro_left_display
-west build -d build/sofle_pro_right
-west build -d build/sofle_pro_right_tps65
+west build -d build/sofle_pro_dongle
+west build -d build/sofle_pro_left_peripheral
+west build -d build/sofle_pro_right_peripheral
 ```
 
 修改了 shield、extra modules、snippets 或 `ZMK_CONFIG` 后，建议继续使用带 `-p` 的完整命令重新生成构建目录。
@@ -182,4 +164,4 @@ source directory "." does not contain a CMakeLists.txt
 
 说明命令从 workspace 根目录执行时缺少 `-s app`。
 
-右手构建可能出现一些 Kconfig 提示，例如 USB 或 central battery proxy 的配置被 split peripheral 角色关闭。这类提示来自左右手角色差异；只要最终生成 `zmk.uf2`，构建就是成功的。触控板滚动的 smooth scrolling 配置放在左手 central 固件中，右手触控板固件只负责采集并转发输入事件。
+第一次刷入 dongle 结构前，建议先给 dongle、左手、右手都刷一次 `settings_reset`，再分别刷入三个正式固件。左右手是 peripheral，不会作为独立键盘连接主机；主机只连接 `sofle_pro_dongle`。

@@ -1,26 +1,22 @@
 #include <dt-bindings/zmk/matrix_transform.h>
 #include <physical_layouts.dtsi>
+#include <zephyr/dt-bindings/mipi_dbi/mipi_dbi.h>
 
 / {
-	kscan0: kscan0 {
-		compatible = "zmk,kscan-gpio-matrix";
-		diode-direction = "col2row";
-		wakeup-source;
-		row-gpios = <&gpio0 9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
-		<&gpio0 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
-		<&gpio1 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
-		<&gpio1 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
-		<&gpio1 4 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
-		col-gpios
-		= <&gpio1 13 GPIO_PULL_DOWN>
-		, <&gpio1 15 GPIO_PULL_DOWN>
-		, <&gpio0 2 GPIO_PULL_DOWN>
-		, <&gpio0 29 GPIO_PULL_DOWN>
-		, <&gpio0 31 GPIO_PULL_DOWN>
-		, <&gpio0 8 GPIO_PULL_DOWN>
-		;
+	chosen {
+		zmk,kscan = &mock_kscan;
+		zmk,physical-layout = &physical_layout0;
+		zmk,battery = &vbatt;
+		zephyr,display = &display0;
 	};
-	
+
+	mock_kscan: mock_kscan_0 {
+		compatible = "zmk,kscan-mock";
+		columns = <0>;
+		rows = <0>;
+		events = <0>;
+	};
+
 	default_transform: keymap_transform_0 {
 		compatible = "zmk,matrix-transform";
 		columns = <12>;
@@ -33,13 +29,13 @@
 		                        RC(4,3) RC(4,4) RC(4,5)     RC(4,9) RC(4,10) RC(4,11)
 		>;
 	};
-	
-	physical_layout0: physical_layout_0 {// First physical layout, use different naming for other layouts
+
+	physical_layout0: physical_layout_0 {
 		compatible = "zmk,physical-layout";
 		display-name = "Default Layout";
-		transform = <&default_transform>;// Label of the matrix transform for this layout
-		kscan = <&kscan0>;// Label of the kscan node
-		keys//                     w   h    x    y     rot    rx    ry
+		transform = <&default_transform>;
+		kscan = <&mock_kscan>;
+		keys
 		= <&key_physical_attrs 100 100    0    0       0     0     0>
 		, <&key_physical_attrs 100 100  100    0       0     0     0>
 		, <&key_physical_attrs 100 100  200    0       0     0     0>
@@ -96,7 +92,7 @@
 		, <&key_physical_attrs 100 100 1000  430       0     0     0>
 		;
 	};
-	
+
 	left_encoder: left_encoder {
 		compatible = "alps,ec11";
 		a-gpios = <&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
@@ -104,7 +100,7 @@
 		steps = <15>;
 		status = "disabled";
 	};
-	
+
 	right_encoder: right_encoder {
 		compatible = "alps,ec11";
 		a-gpios = <&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
@@ -112,19 +108,107 @@
 		steps = <15>;
 		status = "disabled";
 	};
-	
+
 	sensors: sensors {
 		compatible = "zmk,keymap-sensors";
 		sensors = <&left_encoder &right_encoder>;
 	};
-	
-	
-	chosen {
-		zmk,physical-layout = &physical_layout0;
-		zmk,battery = &vbatt;
+
+	mipi_dbi {
+		compatible = "zephyr,mipi-dbi-spi";
+		dc-gpios = <&gpio0 22 GPIO_ACTIVE_HIGH>;      /* PCB: EPD_DC, nice!nano D4 */
+		reset-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;     /* PCB: EPD_RST, nice!nano E6 */
+		spi-dev = <&spi1>;
+		write-only;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		display0: display@0 {
+			compatible = "solomon,ssd1680";
+			status = "okay";
+			reg = <0>;
+			width = <152>;
+			height = <152>;
+			rotation = <90>;
+
+			mipi-max-frequency = <4000000>;
+			busy-gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>; /* PCB: EPD_BUSY, nice!nano D7 */
+			tssv = <0x80>;
+
+			full {
+				border-waveform = <0x05>;
+			};
+
+			partial {
+				border-waveform = <0x05>;
+				dummy-line = <0x1a>;
+				gate-line-width = <0x08>;
+				vcom = <0x22>;
+				lut = [
+				00 40 00 00 00 00 00 00 00 00 00 00
+				80 80 00 00 00 00 00 00 00 00 00 00
+				40 40 00 00 00 00 00 00 00 00 00 00
+				00 80 00 00 00 00 00 00 00 00 00 00
+				00 00 00 00 00 00 00 00 00 00 00 00
+
+				0F 00 00 00 00 00 00
+				01 01 00 00 00 00 00
+				00 00 00 00 00 00 00
+				00 00 00 00 00 00 00
+				00 00 00 00 00 00 00
+				00 00 00 00 00 00 00
+				00 00 00 00 00 00 00
+				00 00 00 00 00 00 00
+				00 00 00 00 00 00 00
+				00 00 00 00 00 00 00
+				00 00 00 00 00 00 00
+				00 00 00 00 00 00 00
+
+				22 22 22 22 22 22 00 00 00
+				];
+			};
+		};
 	};
-	
+
+	tps65_listener: tps65_listener {
+		compatible = "zmk,input-listener";
+		status = "okay";
+		device = <&tps65>;
+	};
+
 	vbatt: vbatt {
 		compatible = "zmk,battery-nrf-vddh";
+	};
+};
+
+&spi1 {
+	status = "okay";
+	cs-gpios = <&gpio0 24 GPIO_ACTIVE_LOW>; /* PCB: EPD_CS, nice!nano B6 */
+};
+
+&i2c0 {
+	compatible = "nordic,nrf-twim";
+	status = "okay";
+	clock-frequency = <400000>;
+
+	tps65: iqs5xx@74 {
+		compatible = "azoteq,iqs5xx";
+		reg = <0x74>;
+		status = "okay";
+
+		rdy-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;     /* PCB: TPS_RDY, nice!nano TX */
+		reset-gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;    /* PCB: TPS_NRST, nice!nano RX */
+
+		one-finger-tap;
+		two-finger-tap;
+		press-and-hold;
+		press-and-hold-time = <250>;
+
+		scroll;
+		natural-scroll-x;
+		natural-scroll-y;
+
+		bottom-beta = <5>;
+		stationary-threshold = <5>;
 	};
 };
